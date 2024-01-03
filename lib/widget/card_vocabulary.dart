@@ -24,6 +24,14 @@ class _CardVocabularyState extends State<CardVocabulary> {
   final TextEditingController _meanWord = TextEditingController();
   String s = '';
 
+  @override
+  void dispose() {
+    // Đảm bảo dispose controller khi không còn cần thiết
+    _word.dispose();
+    _meanWord.dispose();
+    super.dispose();
+  }
+
   void showSnackbar(String show) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -49,8 +57,7 @@ class _CardVocabularyState extends State<CardVocabulary> {
                                 color: const Color.fromARGB(255, 12, 80, 163),
                                 fontWeight: FontWeight.bold)),
                         validator: (value) {
-                          if (value == null)
-                            return "Please input";
+                          if (value == null) return "Please input";
                           return null;
                         },
                       )),
@@ -63,11 +70,10 @@ class _CardVocabularyState extends State<CardVocabulary> {
                             labelStyle: TextStyle(
                                 color: const Color.fromARGB(255, 12, 80, 163),
                                 fontWeight: FontWeight.bold)),
-                          validator: (value) {
-                            if (value == null)
-                              return "Please input";
-                            return null;
-                          },
+                        validator: (value) {
+                          if (value == null) return "Please input";
+                          return null;
+                        },
                       )),
                 ],
               )),

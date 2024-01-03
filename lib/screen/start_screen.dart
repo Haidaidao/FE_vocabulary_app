@@ -3,6 +3,7 @@ import 'package:adv_basics/screen/controllscreen.dart';
 import 'package:adv_basics/screen/listvocabulary.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../model/user.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen(this.StartQuiz, {super.key});
@@ -16,7 +17,7 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameCourseController = TextEditingController();
-  
+
   String s = "Hiragana";
 
   void showForm(BuildContext context) {
@@ -40,7 +41,7 @@ class _StartScreenState extends State<StartScreen> {
                     onPressed: () {
                       // ignore: avoid_print
                       setState(() {
-                        s=_nameCourseController.text;
+                        s = _nameCourseController.text;
                       });
                       Navigator.of(context).pop(false);
                     },
@@ -70,6 +71,7 @@ class _StartScreenState extends State<StartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 245, 249, 2),
