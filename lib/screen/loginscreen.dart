@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../model/user.dart';
+import '../service/handleResponse.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -58,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.statusCode == 200) {
-        handleResponse(response.body);
+        Respone.handleResponse(response.body);
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const ControllScreen("start-screen")));
       } else {

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../model/user.dart';
+import '../service/handleResponse.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -69,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
       Map<String, dynamic> parsedJson = json.decode(response.body);
       if (response.statusCode == 200) {
-        handleResponse(response.body);
+        Respone.handleResponse(response.body);
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const ControllScreen("start-screen")));
       } else {

@@ -123,19 +123,7 @@ class _StartScreenState extends State<StartScreen> {
             child: Center(
                 child: Column(
               mainAxisSize: MainAxisSize.min,
-              //mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //Cách 1 làm mờ widget(không nên dùng nhiều)
-                // Opacity(
-                //   opacity: 0.7,
-                //   child: Image.asset(
-                //     'assets/images/quiz-logo.png',
-                //     width: 300,
-                //     height: 300,
-                //   ),
-                // ),
-
-                //Cách 2
                 Image.asset(
                   'assets/images/book_banner.png',
                   width: 300,
