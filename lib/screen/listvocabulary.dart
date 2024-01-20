@@ -1,5 +1,9 @@
 import 'package:adv_basics/widget/card_vocabulary.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
+import '../service/handleResponse.dart';
 
 class ListVocabulary extends StatefulWidget {
   const ListVocabulary({required this.nameCourse, super.key});
@@ -71,6 +75,65 @@ class _ListVocabularyState extends State<ListVocabulary> {
             ));
   }
 
+  Future<List<dynamic>> getVocabularyCourse(id) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.0.123:3001/v1/api/get_vocabulary_course'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode({'id': id}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['error'] == 0) {
+          return data['data'][0];
+        }
+      }
+      print("Error: ${response.statusCode}");
+    } catch (e) {
+      print("Error: $e");
+    }
+    return []; // Trả về danh sách trống nếu có lỗi
+  }
+
+  void deleteWord(id) async {
+    final response = await http.delete(
+      Uri.parse('http://192.168.0.123:3001/v1/api/vocabulary'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: json.encode({'id': id}),
+    );
+
+    if (response.statusCode == 200) {
+      print("Data deleted successfully");
+      setState(() {});
+    } else {
+      // Xử lý lỗi
+      throw Exception('Failed to delete data');
+    }
+  }
+
+  void updateWord(word) async {
+    
+    final response = await http.put(
+      Uri.parse('http://192.168.0.123:3001/v1/api/vocabulary'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: json.encode(word),
+    );
+
+    if (response.statusCode == 200) {
+      print("Data deleted successfully");
+      setState(() {});
+    } else {
+      // Xử lý lỗi
+      throw Exception('Failed to delete data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,16 +170,35 @@ class _ListVocabularyState extends State<ListVocabulary> {
           decoration: const BoxDecoration(
             color: Color.fromARGB(255, 239, 239, 225),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CardVocabulary(
-                    nameWord: "ascdsv",
-                    meanWord: "sdvsdgfverg",
-                    color: Colors.green),
-              ],
-            ),
+          child: FutureBuilder<List<dynamic>>(
+            future: getVocabularyCourse('65a8ce9ff9e3a73bf94bbdd4'),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+              if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    var word = snapshot.data![index];
+                    return CardVocabulary(
+                      nameWord: word['name'],
+                      meanWord: word['mean'],
+                      id: word['_id'],
+                      complete: word['complete'],
+                      important: word['important'],
+                      deleteFunction: deleteWord,
+                      updateFunction: updateWord,
+                      color: Colors.green,
+                    );
+                  },
+                );
+              }
+              return Center(child: Text('No data'));
+            },
           ),
         ),
       ),

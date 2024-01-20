@@ -5,11 +5,21 @@ class CardVocabulary extends StatefulWidget {
   const CardVocabulary(
       {required this.nameWord,
       required this.meanWord,
+      required this.id,
+      required this.important,
+      required this.complete,
+      this.deleteFunction,
+      this.updateFunction,
       required this.color,
       super.key});
 
   final String nameWord;
   final String meanWord;
+  final String id;
+  final important;
+  final complete;
+  final Function? deleteFunction;
+  final Function? updateFunction;
   final Color color;
 
   @override
@@ -41,6 +51,10 @@ class _CardVocabularyState extends State<CardVocabulary> {
   }
 
   void showForm(BuildContext context, String word, String mean) {
+    // Gán giá trị ban đầu cho các controller
+    _word.text = word;
+    _meanWord.text = mean;
+
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -50,28 +64,30 @@ class _CardVocabularyState extends State<CardVocabulary> {
                   Form(
                       key: _formKeyWord,
                       child: TextFormField(
-                        initialValue: word,
+                        controller: _word, // Sử dụng controller
                         decoration: InputDecoration(
                             labelText: 'Enter word',
                             labelStyle: TextStyle(
                                 color: const Color.fromARGB(255, 12, 80, 163),
                                 fontWeight: FontWeight.bold)),
                         validator: (value) {
-                          if (value == null) return "Please input";
+                          if (value == null || value.isEmpty)
+                            return "Please input";
                           return null;
                         },
                       )),
                   Form(
                       key: _formKeyWordMean,
                       child: TextFormField(
-                        initialValue: mean,
+                        controller: _meanWord, // Sử dụng controller
                         decoration: InputDecoration(
                             labelText: 'Enter mean of word',
                             labelStyle: TextStyle(
                                 color: const Color.fromARGB(255, 12, 80, 163),
                                 fontWeight: FontWeight.bold)),
                         validator: (value) {
-                          if (value == null) return "Please input";
+                          if (value == null || value.isEmpty)
+                            return "Please input";
                           return null;
                         },
                       )),
@@ -80,11 +96,19 @@ class _CardVocabularyState extends State<CardVocabulary> {
               actions: [
                 TextButton(
                     onPressed: () {
-                      // ignore: avoid_print
-                      setState(() {
-                        s = _word.text;
-                      });
-                      Navigator.of(context).pop(false);
+                      // Lấy giá trị từ các controller
+                      String updatedWord = _word.text;
+                      String updatedMeanWord = _meanWord.text;
+
+                      Map<String, dynamic> word = {
+                        'id': widget.id,
+                        'name': updatedWord,
+                        'mean': updatedMeanWord,
+                        'important': widget.important,
+                        'complete': widget.complete
+                      };
+                      Navigator.of(context).pop();
+                      widget.updateFunction!(word);
                     },
                     child: Text(
                       'Confirm',
@@ -93,7 +117,7 @@ class _CardVocabularyState extends State<CardVocabulary> {
                     )),
                 TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop(false);
+                      Navigator.of(context).pop();
                     },
                     child: Text(
                       'Cancel',
@@ -150,17 +174,25 @@ class _CardVocabularyState extends State<CardVocabulary> {
               children: [
                 IconButton(
                     icon: Icon(
-                      isCheck ? Icons.check_box : Icons.check_box_outline_blank,
+                      widget.important ? Icons.check_box : Icons.check_box_outline_blank,
                       color: const Color.fromARGB(255, 12, 80, 163),
                     ),
                     onPressed: () {
-                      setState(() {
-                        isCheck = !isCheck;
-                        if (isCheck)
-                          showSnackbar('Add difficult word');
-                        else
-                          showSnackbar('Remove difficult word');
-                      });
+                      Map<String, dynamic> word = {
+                          'id': widget.id,
+                          'name': widget.nameWord,
+                          'mean': widget.meanWord,
+                          'important': !widget.important,
+                          'complete': widget.complete
+                        };
+                      if (isCheck) {
+                        widget.updateFunction!(word);
+                        showSnackbar('Add difficult word');
+                      } else {
+                        widget.updateFunction!(word);
+                        showSnackbar('Remove difficult word');
+                      }
+                     
                     }),
                 IconButton(
                     icon: Icon(
@@ -168,7 +200,7 @@ class _CardVocabularyState extends State<CardVocabulary> {
                       color: const Color.fromARGB(255, 12, 80, 163),
                     ),
                     onPressed: () {
-                      showForm(context, 'a', 'b');
+                      showForm(context, widget.nameWord, widget.meanWord);
                     }),
                 IconButton(
                   icon: const Icon(
@@ -191,6 +223,7 @@ class _CardVocabularyState extends State<CardVocabulary> {
                                               255, 12, 80, 163)))),
                               TextButton(
                                 onPressed: () {
+                                  widget.deleteFunction!(widget.id);
                                   Navigator.pop(context, false);
                                 },
                                 child: const Text('Delete',

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../model/user.dart';
 import '../service/handleResponse.dart';
+import '../service/url.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -41,22 +42,8 @@ class _SignupScreenState extends State<SignupScreen> {
         builder: (context) => const ControllScreen("login-screen")));
   }
 
-  void handleResponse(String responseBody) {
-    Map<String, dynamic> parsedJson = json.decode(responseBody);
-
-    // Kiểm tra nếu có lỗi trong phản hồi
-    if (parsedJson["error"] == 0) {
-      // Xử lý dữ liệu hợp lệ
-      var userData = parsedJson["data"];
-      User.setUser(userData['username'], userData['email']);
-    } else {
-      // Xử lý lỗi
-      print("Error in response");
-    }
-  }
-
   Future<void> register(String username, String email, String password) async {
-    var url = Uri.parse('http://192.168.1.7:3001/v1/api/auth/register');
+    var url = Uri.parse('http://192.168.0.123:3001/v1/api/auth/register');
     Map<String, dynamic> request = {
       'username': username,
       'email': email,

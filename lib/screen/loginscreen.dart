@@ -34,22 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
     ));
   }
 
-  void handleResponse(String responseBody) {
-    Map<String, dynamic> parsedJson = json.decode(responseBody);
-
-    // Kiểm tra nếu có lỗi trong phản hồi
-    if (parsedJson["error"] == 0) {
-      // Xử lý dữ liệu hợp lệ
-      var userData = parsedJson["data"];
-      User.setUser(userData['username'], userData['email']);
-    } else {
-      // Xử lý lỗi
-      print("Error in response");
-    }
-  }
-
   Future<void> login(String username, String password) async {
-    var url = Uri.parse('http://192.168.1.7:3001/v1/api/auth/login');
+    var url = Uri.parse('http://192.168.0.123:3001/v1/api/auth/login');
     Map<String, dynamic> request = {'username': username, 'password': password};
 
     try {
