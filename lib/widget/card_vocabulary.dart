@@ -10,6 +10,7 @@ class CardVocabulary extends StatefulWidget {
       required this.complete,
       this.deleteFunction,
       this.updateFunction,
+      this.createFunction,
       required this.color,
       super.key});
 
@@ -20,6 +21,7 @@ class CardVocabulary extends StatefulWidget {
   final complete;
   final Function? deleteFunction;
   final Function? updateFunction;
+  final Function? createFunction;
   final Color color;
 
   @override

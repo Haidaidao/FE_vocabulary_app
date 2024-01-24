@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> login(String username, String password) async {
-    var url = Uri.parse('http://192.168.0.123:3001/v1/api/auth/login');
+    var url = Uri.parse('http://192.168.1.10:3001/v1/api/auth/login');
     Map<String, dynamic> request = {'username': username, 'password': password};
 
     try {

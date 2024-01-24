@@ -43,7 +43,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> register(String username, String email, String password) async {
-    var url = Uri.parse('http://192.168.0.123:3001/v1/api/auth/register');
+    var url = Uri.parse('http://192.168.1.10:3001/v1/api/auth/register');
     Map<String, dynamic> request = {
       'username': username,
       'email': email,

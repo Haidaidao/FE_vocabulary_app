@@ -52,11 +52,18 @@ class _ListVocabularyState extends State<ListVocabulary> {
               actions: [
                 TextButton(
                     onPressed: () {
-                      // ignore: avoid_print
-                      setState(() {
-                        s = _word.text;
-                      });
-                      Navigator.of(context).pop(false);
+                      // Lấy giá trị từ các controller
+                      String Word = _word.text;
+                      String MeanWord = _meanWord.text;
+
+                      Map<String, dynamic> word = {
+                        'name': Word,
+                        'mean': MeanWord,
+                        'important': 0,
+                        'complete': 0
+                      };
+                      Navigator.of(context).pop();
+                      createWord(word);
                     },
                     child: Text(
                       'Confirm',
@@ -78,7 +85,7 @@ class _ListVocabularyState extends State<ListVocabulary> {
   Future<List<dynamic>> getVocabularyCourse(id) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.123:3001/v1/api/get_vocabulary_course'),
+        Uri.parse('http://192.168.1.10:3001/v1/api/get_vocabulary_course'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -100,7 +107,7 @@ class _ListVocabularyState extends State<ListVocabulary> {
 
   void deleteWord(id) async {
     final response = await http.delete(
-      Uri.parse('http://192.168.0.123:3001/v1/api/vocabulary'),
+      Uri.parse('http://192.168.1.10:3001/v1/api/vocabulary'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -117,9 +124,8 @@ class _ListVocabularyState extends State<ListVocabulary> {
   }
 
   void updateWord(word) async {
-    
     final response = await http.put(
-      Uri.parse('http://192.168.0.123:3001/v1/api/vocabulary'),
+      Uri.parse('http://192.168.1.10:3001/v1/api/vocabulary'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -132,6 +138,49 @@ class _ListVocabularyState extends State<ListVocabulary> {
     } else {
       // Xử lý lỗi
       throw Exception('Failed to delete data');
+    }
+  }
+
+  void createWord(word) async {
+    
+    
+    final response = await http.post(
+      Uri.parse('http://192.168.1.10:3001/v1/api/vocabulary'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: json.encode(word),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print("====================");
+      print(responseData['data']);
+      Map<String, dynamic> wordAdd = {
+        'type': "ADD-WORD",
+        'courseId': "65a8ce9ff9e3a73bf94bbdd4",
+        'wordsArr': [responseData["data"]["_id"]]
+      };
+
+      final response2 = await http.post(
+        Uri.parse('http://192.168.1.10:3001/v1/api/course'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(wordAdd),
+      );
+
+      if (response2.statusCode == 200) {
+        print("Data create successfully");
+
+        setState(() {});
+      } else {
+        // Xử lý lỗi
+        throw Exception('Failed to create data');
+      }
+    } else {
+      // Xử lý lỗi
+      throw Exception('Failed to create data');
     }
   }
 
