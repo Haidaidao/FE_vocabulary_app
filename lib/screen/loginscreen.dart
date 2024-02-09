@@ -46,6 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         Respone.handleResponse(response.body);
+        final data = json.decode(response.body);
+        print(data);
+        Respone.writeFile(data['data']['_id'], data['data']['username'],
+            data['data']['email'], data['data']['nameCourse'], data['data']['idCourse']);
+        Respone.readFile();
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const ControllScreen("start-screen")));
       } else {

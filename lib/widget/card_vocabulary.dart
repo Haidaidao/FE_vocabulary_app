@@ -175,64 +175,50 @@ class _CardVocabularyState extends State<CardVocabulary> {
             Row(
               children: [
                 IconButton(
-                    icon: Icon(
-                      widget.important ? Icons.check_box : Icons.check_box_outline_blank,
-                      color: const Color.fromARGB(255, 12, 80, 163),
-                    ),
-                    onPressed: () {
-                      Map<String, dynamic> word = {
-                          'id': widget.id,
-                          'name': widget.nameWord,
-                          'mean': widget.meanWord,
-                          'important': !widget.important,
-                          'complete': widget.complete
-                        };
-                      if (isCheck) {
-                        widget.updateFunction!(word);
-                        showSnackbar('Add difficult word');
-                      } else {
-                        widget.updateFunction!(word);
-                        showSnackbar('Remove difficult word');
-                      }
-                     
-                    }),
-                IconButton(
-                    icon: Icon(
-                      Icons.edit,
-                      color: const Color.fromARGB(255, 12, 80, 163),
-                    ),
-                    onPressed: () {
-                      showForm(context, widget.nameWord, widget.meanWord);
-                    }),
-                IconButton(
-                  icon: const Icon(
-                    Icons.delete,
-                    color: Colors.red,
+                  icon: Icon(
+                    widget.important ? Icons.check_box : Icons.check_box_outline_blank,
+                    color: const Color.fromARGB(255, 12, 80, 163),
                   ),
-                  onPressed: () => showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Delete'),
-                            content: Text(widget.nameWord),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context, false);
-                                  },
-                                  child: const Text('Cancel',
-                                      style: TextStyle(
-                                          color: Color.fromARGB(
-                                              255, 12, 80, 163)))),
-                              TextButton(
+                  onPressed: () {
+                    
+                  }),
+              IconButton(
+                  icon: Icon(
+                    Icons.edit,
+                    color: const Color.fromARGB(255, 12, 80, 163),
+                  ),
+                  onPressed: () {
+                    showForm(context, widget.nameWord, widget.meanWord);
+                  }),
+              IconButton(
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
+                onPressed: () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Delete'),
+                          content: Text(widget.nameWord),
+                          actions: [
+                            TextButton(
                                 onPressed: () {
-                                  widget.deleteFunction!(widget.id);
                                   Navigator.pop(context, false);
                                 },
-                                child: const Text('Delete',
-                                    style: TextStyle(color: Colors.red)),
-                              ),
-                            ],
-                          )),
+                                child: const Text('Cancel',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(
+                                            255, 12, 80, 163)))),
+                            TextButton(
+                              onPressed: () {
+                                widget.deleteFunction!(widget.id);
+                                Navigator.pop(context, false);
+                              },
+                              child: const Text('Delete',
+                                  style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        )),
                 ),
               ],
             )

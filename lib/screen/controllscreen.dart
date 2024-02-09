@@ -1,4 +1,5 @@
 import 'package:adv_basics/data/question.dart';
+import 'package:adv_basics/question_summary.dart';
 import 'package:adv_basics/screen/loginscreen.dart';
 import 'package:adv_basics/screen/question_screen.dart';
 import 'package:adv_basics/result_screen.dart';
@@ -36,12 +37,18 @@ class _ControllScreenState extends State<ControllScreen> {
     });
   }
 
-  void chooseAnswer(String answer) {
+  void chooseAnswer(
+      String answer, List<dynamic> listQuestion, int lengthListAnswer) {
     selectedAnswer.add(answer);
-    if (selectedAnswer.length == questions.length)
-      setState(() {
-        activeScreen = 'result-screen';
-      });
+    print(listQuestion);
+    if (selectedAnswer.length == lengthListAnswer) {
+      print(selectedAnswer);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ResultScreen(
+              chosenAnswer: selectedAnswer,
+              questions: listQuestion,
+              StartScreen: switchScreen)));
+    }
   }
 
   @override

@@ -4,10 +4,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import '../service/handleResponse.dart';
+import '../model/user.dart';
 
 class ListVocabulary extends StatefulWidget {
   const ListVocabulary({required this.nameCourse, super.key});
-  final String nameCourse;
+  final String? nameCourse;
 
   @override
   State<ListVocabulary> createState() => _ListVocabularyState();
@@ -142,8 +143,6 @@ class _ListVocabularyState extends State<ListVocabulary> {
   }
 
   void createWord(word) async {
-    
-    
     final response = await http.post(
       Uri.parse('http://192.168.1.10:3001/v1/api/vocabulary'),
       headers: <String, String>{
@@ -154,7 +153,7 @@ class _ListVocabularyState extends State<ListVocabulary> {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      print("====================");
+     
       print(responseData['data']);
       Map<String, dynamic> wordAdd = {
         'type': "ADD-WORD",
@@ -220,7 +219,7 @@ class _ListVocabularyState extends State<ListVocabulary> {
             color: Color.fromARGB(255, 239, 239, 225),
           ),
           child: FutureBuilder<List<dynamic>>(
-            future: getVocabularyCourse('65a8ce9ff9e3a73bf94bbdd4'),
+            future: getVocabularyCourse(User.getIdCourse()),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());

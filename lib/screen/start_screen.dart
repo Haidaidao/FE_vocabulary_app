@@ -4,6 +4,11 @@ import 'package:adv_basics/screen/listvocabulary.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../model/user.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
+import '../model/user.dart';
+import '../service/handleResponse.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen(this.StartQuiz, {super.key});
@@ -18,7 +23,30 @@ class _StartScreenState extends State<StartScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameCourseController = TextEditingController();
 
-  String s = "Hiragana";
+  String namesCourse = " ";
+  var lengthCurrentCourse = 0;
+
+  void createCourse(course) async {
+    final response = await http.post(
+      Uri.parse('http://192.168.1.10:3001/v1/api/course'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: json.encode(course),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        final data = json.decode(response.body);
+        namesCourse = data['data']['name'];
+        User.setIdCourse(data['data']['_id']);
+        User.setNameCourse(data['data']['name']);
+      });
+    } else {
+      // Xử lý lỗi
+      throw Exception('Failed to create data');
+    }
+  }
 
   void showForm(BuildContext context) {
     showDialog(
@@ -39,10 +67,14 @@ class _StartScreenState extends State<StartScreen> {
               actions: [
                 TextButton(
                     onPressed: () {
-                      // ignore: avoid_print
-                      setState(() {
-                        s = _nameCourseController.text;
-                      });
+                      String courseName = _nameCourseController.text;
+                      Map<String, dynamic> courseAdd = {
+                        'type': "EMPTY-COURSE",
+                        'name': courseName,
+                        'userInfor': User.getId()
+                      };
+                      createCourse(courseAdd);
+                      _nameCourseController.text = "";
                       Navigator.of(context).pop(false);
                     },
                     child: Text(
@@ -62,6 +94,47 @@ class _StartScreenState extends State<StartScreen> {
             ));
   }
 
+  void getCourse() async {
+    var id = User.getId();
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.1.10:3001/v1/api/get_course'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode({'id': id}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['error'] == 0) {
+          print(data['data']);
+          var dataTemp = data['data'];
+          for (var i = 0; i < dataTemp.length; i++) {
+            if (dataTemp[i]['_id'] == User.getIdCourse()) {
+              print("============");
+              lengthCurrentCourse = dataTemp[i]['listVocabulary'].length;
+              print(lengthCurrentCourse);
+            }
+          }
+          return data['data'];
+        }
+      }
+      print("Error: ${response.statusCode}");
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      getCourse();
+    });
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -71,7 +144,6 @@ class _StartScreenState extends State<StartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 245, 249, 2),
@@ -88,8 +160,14 @@ class _StartScreenState extends State<StartScreen> {
           TextButton.icon(
             label: const Text('Courses'),
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => new ChooseCourse()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => new ChooseCourse(
+                            lengthCurrentCourse: lengthCurrentCourse,
+                          ))).then((value) {
+                setState(() {});
+              });
             },
             icon: Icon(Icons.arrow_drop_down_circle),
             style: TextButton.styleFrom(
@@ -130,10 +208,9 @@ class _StartScreenState extends State<StartScreen> {
                   height: 300,
                   color: const Color.fromARGB(255, 12, 80, 163),
                 ),
-
                 const SizedBox(height: 30),
                 Text(
-                  "${s}",
+                  "${User.getNameCourse()}",
                   style: GoogleFonts.lato(
                       color: Color.fromARGB(255, 12, 80, 163),
                       fontSize: 24,
@@ -147,7 +224,8 @@ class _StartScreenState extends State<StartScreen> {
                       primary: Color.fromARGB(255, 12, 80, 163),
                     ),
                     onPressed: () {
-                      widget.StartQuiz('question-screen');
+                      if (User.getNameCourse() != " ")
+                        widget.StartQuiz('question-screen');
                     },
                     child: const Text('Start quiz'),
                   ),
@@ -159,9 +237,11 @@ class _StartScreenState extends State<StartScreen> {
                       primary: Color.fromARGB(255, 12, 80, 163),
                     ),
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              const ListVocabulary(nameCourse: 'Hiragana')));
+                      if (User.getNameCourse() != " ") {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ListVocabulary(
+                                nameCourse: User.getNameCourse())));
+                      }
                     },
                     child: const Text('List vocabulary'),
                   ),

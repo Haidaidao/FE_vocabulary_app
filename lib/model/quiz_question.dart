@@ -2,9 +2,9 @@ class QuizQuestion {
   const QuizQuestion(this.text, this.answers);
 
   final String text;
-  final List<String> answers;
+  final List<dynamic> answers;
 
-  List<String> get ShuffledAnswer {
+  List get ShuffledAnswer {
     final shuffledList = List.of(answers);
     shuffledList.shuffle();
     return shuffledList;

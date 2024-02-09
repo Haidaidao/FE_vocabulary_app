@@ -28,7 +28,7 @@ class QuestionSummery extends StatelessWidget {
                     alignment: Alignment.center,  
                     child: Text(((data['question_index'] as int) + 1).toString(),
                         style: GoogleFonts.lato(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -45,7 +45,7 @@ class QuestionSummery extends StatelessWidget {
                           child: Text(
                             data['question'] as String,
                             style: GoogleFonts.lato(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,),
                           ),
